@@ -102,6 +102,22 @@ Longest transaction:            5183 ms
 Shortest transaction:             91 ms
 ```
 
+### go - `net/http`, `vips`
+```
+Transactions:                   1000
+Availability:                    100 %
+Elapsed time:                 32.057 s
+Response time:               638.557 ms
+Transaction rate:             31.194 trans/sec
+Average Concurrency:          19.931
+Successful transactions:        1000
+Failed transactions:               0
+Longest transaction:            1130 ms
+90th percentile:                 762 ms
+50th percentile:                 639 ms
+Shortest transaction:             65 ms
+```
+
 ### python - `Pillow`
 ```
 Transactions:                   1000

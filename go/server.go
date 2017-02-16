@@ -3,14 +3,15 @@ package main
 import (
   "fmt"
 	"io"
+  "io/ioutil"
   "encoding/json"
 	"net/http"
   "image"
   "image/jpeg"
   "bytes"
   "gopkg.in/redis.v5"
+  "github.com/daddye/vips"
   "github.com/nfnt/resize"
-  // "github.com/disintegration/imaging"
 )
 
 type SubPayload struct {
@@ -30,6 +31,30 @@ var client *redis.Client
 func hello(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "Hello world!")
   fmt.Println("called!")
+}
+
+func resizevips(w http.ResponseWriter, r *http.Request) {
+  body, err := ioutil.ReadAll(r.Body)
+  if (err != nil) {
+    panic(err)
+  }
+
+  options := vips.Options{
+      Width:        200,
+      Height:       200,
+      Crop:         true,
+      Interpolator: vips.BILINEAR,
+      Gravity:      vips.CENTRE,
+      Quality:      70,
+  }
+  out, err := vips.Resize(body, options)
+  if (err != nil) {
+    panic(err)
+  }
+
+  fmt.Println("doing stuff!")
+  w.Header().Set("Content-Type", "image/jpeg")
+  w.Write(out)
 }
 
 func resizeimage(w http.ResponseWriter, r *http.Request) {
@@ -84,6 +109,7 @@ func doredis(w http.ResponseWriter, r *http.Request) {
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", hello)
+	mux.HandleFunc("/image-vips", resizevips)
 	mux.HandleFunc("/image", resizeimage)
 	mux.HandleFunc("/redis", doredis)
 	http.ListenAndServe(":8200", mux)
